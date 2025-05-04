@@ -3,7 +3,7 @@
 [JSON] is a popular format for data serialization that is derived from the
 syntax of JavaScript. JSON documents are tree-like and potentially recursive
 &mdash; two data types, *objects* and *arrays*, can contain other values,
-including other objects and arrays.
+including objects and arrays.
 
 Here is an example JSON document:
 
@@ -15,7 +15,7 @@ Here is an example JSON document:
 }
 ```
 
-Let's write a program that **parses** the JSON to an Rust object, known as an
+Let's write a program that **parses** the JSON to a Rust object, known as an
 *abstract syntax tree*, then **serializes** the AST back to JSON.
 
 ## Setup
@@ -35,7 +35,7 @@ enum JSONValue<'a> {
 ```
 
 To avoid copying when deserializing strings, `JSONValue` borrows strings from
-the original unparsed JSON. In order for this to work, we cannot interpret
+the original unparsed JSON. For this to work, we cannot interpret
 string escape sequences: the input string `"\n"` will be represented by
 `JSONValue::String("\\n")`, a Rust string with two characters, even though it
 represents a JSON string with just one character.
@@ -71,7 +71,7 @@ fn serialize_jsonvalue(val: &JSONValue) -> String {
 
 Note that the function invokes itself recursively in the `Object` and `Array`
 cases. This pattern appears throughout the parser. The AST creation function
-iterates recursively through the parse result, and the grammar has rules which
+iterates recursively through the parse result, and the grammar has rules that
 include themselves.
 
 ## Writing the grammar
@@ -103,7 +103,7 @@ array = {
 ```
 
 The `object` and `array` rules show how to parse a potentially empty list with
-separators. There are two cases: one for an empty list, and one for a list with
+separators. There are two cases: one for an empty list and one for a list with
 at least one element. This is necessary because a trailing comma in an array,
 such as in `[0, 1,]`, is illegal in JSON.
 
@@ -157,7 +157,7 @@ number = @{
 }
 ```
 
-We need a final rule to represent an entire JSON file. The only legal contents
+We need a final rule to represent an entire JSON file. The only legal content
 of a JSON file is a single object or array. We'll mark this rule [silent], so
 that a parsed JSON file contains only two token pairs: the parsed value itself,
 and [the `EOI` rule].
@@ -243,7 +243,7 @@ fn parse_json_file(file: &str) -> Result<JSONValue, Error<Rule>> {
 ```
 
 The `object` and `array` cases deserve special attention. The contents of an
-`array` token pair is just a sequence of `value`s. Since we're working with a
+`array` token pair are just a sequence of `value`s. Since we're working with a
 Rust iterator, we can simply map each value to its parsed AST node recursively,
 then collect them into a `Vec`. For `object`s, the process is similar, except
 the iterator is over `pair`s, from which we need to extract names and values
@@ -251,7 +251,7 @@ separately.
 
 The `number` and `boolean` cases use Rust's `str::parse` method to convert the
 parsed string to the appropriate Rust type. Every legal JSON number can be
-parsed directly into a Rust floating point number!
+parsed directly into a Rust floating-point number!
 
 We run `parse_value` on the parse result to finish the conversion.
 
